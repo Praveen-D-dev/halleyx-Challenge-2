@@ -1,0 +1,54 @@
+<div class="builder-container">
+  
+  <!-- Sidebar Menu -->
+  <div class="sidebar">
+    <h3>Widgets available</h3>
+    
+    <div cdkDropList 
+         [cdkDropListData]="availableWidgets"
+         id="sidebarList"
+         [cdkDropListConnectedTo]="['canvasList']"
+         class="widget-list">
+         
+         <div class="widget-item" 
+              *ngFor="let type of availableWidgets" 
+              cdkDrag>
+              {{ type }}
+         </div>
+    </div>
+
+    <div class="filter-section">
+      <h3>Layout Filters</h3>
+      <div class="filter-group">
+        <label>Time Period</label>
+        <select class="form-control">
+          <option>All time</option>
+          <option>Today</option>
+          <option>Last 7 Days</option>
+          <option>Last 30 Days</option>
+          <option>Last 90 Days</option>
+        </select>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Main Canvas Area -->
+  <div class="canvas-area">
+    <div class="canvas-header">
+      <h2>Dashboard Configuration</h2>
+      <button class="save-btn" (click)="saveConfig()">Save Configuration</button>
+    </div>
+
+    <div class="canvas-scrollable">
+         <app-dashboard-view></app-dashboard-view>
+    </div>
+  </div>
+
+  <!-- Settings Side Panel (Only visible if a widget is selected) -->
+  <app-widget-settings 
+     class="settings-panel" 
+     *ngIf="dashboardService.selectedWidget() !== null">
+  </app-widget-settings>
+
+</div>

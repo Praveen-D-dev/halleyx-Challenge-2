@@ -1,0 +1,175 @@
+<div class="settings-container" *ngIf="widget">
+  
+  <div class="settings-header">
+    <h3>{{ widget.type }} Configuration</h3>
+    <button class="close-btn" (click)="closePanel()">×</button>
+  </div>
+
+  <div class="settings-body">
+    
+    <!-- General Settings -->
+    <div class="settings-group">
+      <h4>General</h4>
+      
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Widget title</mat-label>
+        <input matInput [(ngModel)]="widget.title" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Widget type</mat-label>
+        <input matInput [value]="widget.type" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="widget.description" rows="2"></textarea>
+      </mat-form-field>
+    </div>
+
+    <!-- Size Settings -->
+    <div class="settings-group">
+      <h4>Widget Size</h4>
+      
+      <div class="row">
+        <mat-form-field appearance="outline">
+           <mat-label>Width (Columns)</mat-label>
+           <input matInput type="number" [(ngModel)]="widget.width" min="1" max="12" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+           <mat-label>Height (Rows)</mat-label>
+           <!-- Height logic is abstract in standard grid, but allowed for definition -->
+           <input matInput type="number" [(ngModel)]="widget.height" min="1" required>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- KPI Specific Settings -->
+    <ng-container *ngIf="widget.type === 'KPI'">
+      <div class="settings-group" *ngIf="widget.dataSettings">
+        <h4>Data Settings</h4>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Select metric</mat-label>
+          <mat-select [(ngModel)]="widget.dataSettings.metric" required>
+             <mat-option *ngFor="let opt of metricOptions" [value]="opt">{{opt}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Aggregation</mat-label>
+          <mat-select [(ngModel)]="widget.dataSettings.aggregation" required>
+             <mat-option *ngFor="let opt of aggregationOptions" [value]="opt">{{opt}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Data format</mat-label>
+          <mat-select [(ngModel)]="widget.dataSettings.dataFormat" required>
+             <mat-option *ngFor="let opt of dataFormatOptions" [value]="opt">{{opt}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+           <mat-label>Decimal Precision</mat-label>
+           <input matInput type="number" [(ngModel)]="widget.dataSettings.decimalPrecision" min="0" required>
+        </mat-form-field>
+
+      </div>
+    </ng-container>
+
+    <!-- Standard Charts Settings -->
+    <ng-container *ngIf="['Bar chart', 'Line chart', 'Area chart', 'Scatter plot chart'].includes(widget.type)">
+       <div class="settings-group" *ngIf="widget.dataSettings">
+        <h4>Data Settings</h4>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Choose X - Axis data</mat-label>
+          <mat-select [(ngModel)]="widget.dataSettings.xAxis" required>
+             <mat-option *ngFor="let opt of axisOptions" [value]="opt">{{opt}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Choose Y - Axis data</mat-label>
+          <mat-select [(ngModel)]="widget.dataSettings.yAxis" required>
+             <mat-option *ngFor="let opt of axisOptions" [value]="opt">{{opt}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+       </div>
+
+       <div class="settings-group">
+        <h4>Styling</h4>
+        <!-- Naive Hex Color Picker string input -->
+        <mat-form-field appearance="outline" class="full-width">
+           <mat-label>Chart color (Hex)</mat-label>
+           <input matInput type="color" [(ngModel)]="widget.styling.chartColor">
+        </mat-form-field>
+
+        <mat-checkbox [(ngModel)]="widget.styling.showDataLabel">Show data label</mat-checkbox>
+       </div>
+    </ng-container>
+
+    <!-- Pie Chart Settings -->
+    <ng-container *ngIf="widget.type === 'Pie chart'">
+       <div class="settings-group" *ngIf="widget.dataSettings">
+        <h4>Data Settings</h4>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Choose chart data</mat-label>
+          <mat-select [(ngModel)]="widget.dataSettings.chartData" required>
+             <mat-option *ngFor="let opt of axisOptions" [value]="opt">{{opt}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-checkbox [(ngModel)]="widget.styling.showLegend">Show legend</mat-checkbox>
+       </div>
+    </ng-container>
+
+    <!-- Table Settings -->
+    <ng-container *ngIf="widget.type === 'Table'">
+      <div class="settings-group" *ngIf="widget.dataSettings">
+        <h4>Data Settings</h4>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Choose columns</mat-label>
+          <mat-select [(ngModel)]="widget.dataSettings.columns" multiple required>
+             <mat-option *ngFor="let opt of tableColumnOptions" [value]="opt">{{opt}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Sort by</mat-label>
+          <mat-select [(ngModel)]="widget.dataSettings.sortBy">
+             <mat-option *ngFor="let opt of sortOptions" [value]="opt">{{opt}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Pagination</mat-label>
+          <mat-select [(ngModel)]="widget.dataSettings.pagination">
+             <mat-option *ngFor="let opt of paginationOptions" [value]="opt">{{opt}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-checkbox [(ngModel)]="widget.dataSettings.applyFilter">Apply filter</mat-checkbox>
+       </div>
+
+       <div class="settings-group">
+        <h4>Styling</h4>
+        <mat-form-field appearance="outline" class="full-width">
+           <mat-label>Font size</mat-label>
+           <input matInput type="number" [(ngModel)]="widget.styling.fontSize" min="12" max="18">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+           <mat-label>Header background</mat-label>
+           <input matInput type="color" [(ngModel)]="widget.styling.headerBackground">
+        </mat-form-field>
+       </div>
+    </ng-container>
+
+  </div>
+
+</div>

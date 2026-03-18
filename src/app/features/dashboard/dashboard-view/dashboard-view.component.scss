@@ -1,0 +1,198 @@
+@use 'sass:math';
+
+.dashboard-canvas {
+  padding: 24px;
+}
+
+.grid-container {
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 4px;
+}
+
+.empty-state {
+  width: 100%;
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  color: #777;
+}
+
+.widget-wrapper {
+  box-sizing: border-box;
+  padding: 8px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  position: relative; /* the wrapper is position relative for hover controls */
+
+  /* The actual visual box */
+  .widget-content {
+    background: white;
+    border-radius: var(--radius-md);
+    height: 100%;
+    min-height: 140px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: var(--transition);
+
+    .widget-title {
+      margin: 0;
+      padding: 16px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-color);
+      background: white;
+    }
+
+    .widget-body {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+  }
+
+  /* Widget Controls (Edit/Delete) - Initially Hidden */
+  .widget-controls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: none;
+    gap: 8px;
+    z-index: 10;
+  }
+
+  &:hover {
+    .widget-content {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    .widget-controls {
+      display: flex;
+    }
+    .resize-handle {
+      display: block;
+    }
+  }
+
+  .resize-handle {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+    display: none;
+    z-index: 20;
+    
+    &::after {
+      content: "";
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid #cbd5e1;
+      border-bottom: 2px solid #cbd5e1;
+      border-bottom-right-radius: 2px;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      width: 6px;
+      height: 6px;
+      border-right: 2px solid #cbd5e1;
+      border-bottom: 2px solid #cbd5e1;
+      border-bottom-right-radius: 2px;
+      opacity: 0.5;
+    }
+
+    &:hover {
+      &::after, &::before {
+        border-color: var(--primary);
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.icon-btn {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  .material-icons {
+    font-size: 16px;
+    color: #555;
+  }
+
+  &:hover.settings-btn { border-color: #2196f3; .material-icons { color: #2196f3; } }
+  &:hover.delete-btn { border-color: #f44336; .material-icons { color: #f44336; } }
+}
+
+/* Base Dynamic Grid Columns (12 for desktop) */
+@for $i from 1 through 12 {
+  .col-desk-#{$i} {
+    flex: 0 0 math.percentage(math.div($i, 12));
+    max-width: math.percentage(math.div($i, 12));
+  }
+}
+
+/* Tablet Layout (8 column paradigm mapped to percentages) */
+@media (max-width: 1024px) {
+  @for $i from 1 through 12 {
+    .col-desk-#{$i} {
+      /* Normalize 12 columns space to 8 columns:
+         If a widget takes up to 8 columns (out of 12 logic), it will scale up */
+       $tablet-width: math.div($i, 8);
+       @if $i > 8 {
+          $tablet-width: 1; /* full width if it requested more than 8 */
+       }
+       flex: 0 0 math.percentage($tablet-width);
+       max-width: math.percentage($tablet-width);
+    }
+  }
+}
+
+/* Mobile Layout (4 column paradigm) */
+@media (max-width: 600px) {
+  @for $i from 1 through 12 {
+    .col-desk-#{$i} {
+      /* Normalize space to 4 columns */
+       $mobile-width: math.div($i, 4);
+       @if $i > 4 {
+          $mobile-width: 1;
+       }
+       flex: 0 0 math.percentage($mobile-width);
+       max-width: math.percentage($mobile-width);
+    }
+  }
+}
+
+/* Drag placeholder */
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

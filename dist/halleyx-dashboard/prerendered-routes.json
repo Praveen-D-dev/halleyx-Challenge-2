@@ -1,0 +1,8 @@
+{
+  "routes": {
+    "/": {},
+    "/configure-dashboard": {},
+    "/dashboard": {},
+    "/orders": {}
+  }
+}

@@ -1,0 +1,52 @@
+<div class="dashboard-canvas">
+  <div class="grid-container" 
+       cdkDropList 
+       id="canvasList"
+       [cdkDropListData]="widgets"
+       [cdkDropListConnectedTo]="['sidebarList']"
+       cdkDropListOrientation="mixed"
+       (cdkDropListDropped)="onDrop($event)">
+    
+    <div *ngIf="widgets.length === 0" class="empty-state">
+      <p>No widgets configured. Click "Configure Dashboard" to add widgets.</p>
+    </div>
+
+    <!-- For simplicity, applying flex/grid with CSS based on dynamic classes -->
+    <div class="widget-wrapper" 
+         *ngFor="let widget of widgets; let i = index"
+         [ngClass]="getWidgetClasses(widget)"
+         [ngStyle]="getWidgetStyles(widget)"
+         (click)="selectWidget(widget)"
+         cdkDrag
+         [cdkDragDisabled]="isResizing || !isEditMode">
+         
+      <!-- Widget Controls -->
+      <div class="widget-controls" *ngIf="isEditMode">
+         <button class="icon-btn settings-btn" (click)="selectWidget(widget)"><i class="material-icons">settings</i></button>
+         <button class="icon-btn delete-btn" (click)="deleteWidget($event, widget, i)"><i class="material-icons">delete</i></button>
+      </div>
+
+      <!-- Resize Handle -->
+      <div *ngIf="isEditMode" 
+           class="resize-handle" 
+           (mousedown)="onResizeStart($event, i, widget.width, widget.height)">
+      </div>
+
+      <div class="widget-content">
+        <h4 class="widget-title">{{ widget.title }}</h4>
+        <div class="widget-body" style="padding: 0;">
+            <!-- Render specific widget based on type -->
+            <app-kpi-widget *ngIf="widget.type === 'KPI'" [config]="widget"></app-kpi-widget>
+            
+            <app-table-widget *ngIf="widget.type === 'Table'" [config]="widget"></app-table-widget>
+            
+            <app-chart-widget 
+               *ngIf="['Bar chart', 'Line chart', 'Pie chart', 'Area chart', 'Scatter plot chart'].includes(widget.type)"
+               [config]="widget">
+            </app-chart-widget>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
