@@ -1,4 +1,3 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://halleyx-backend.onrender.com/api' // Placeholder, user will update this
-};
+  apiUrl: 'https://halleyx-backend-zyse.onrender.com/api'};
